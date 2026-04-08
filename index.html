@@ -44,28 +44,27 @@
         }
         
         @media print {
-            body { background-color: #ffffff; }
-            .no-print { display: none !important; }
-            /* Force background colors and charts to print */
+            @page { margin: 1.5cm; }
+            body { background-color: #ffffff; padding: 0 !important; margin: 0 !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            /* Expand scrollable areas for printing */
-            #roleList, #projectDetails { max-height: none !important; overflow: visible !important; height: auto !important; }
-            .shadow-sm { box-shadow: none !important; border-color: #e2e8f0 !important; }
+            .break-inside-avoid { break-inside: avoid; }
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <!-- INTERACTIVE DASHBOARD VIEW -->
+    <div class="max-w-7xl mx-auto space-y-6 print:hidden">
         
         <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Prateek Goel</h1>
                     <h2 class="text-xl md:text-2xl text-indigo-600 font-medium mt-1">Salesforce Certified Application Architect & Aspiring AI Product Owner</h2>
-                    <p class="text-slate-500 mt-2 flex flex-wrap gap-4">
+                    <p class="text-slate-500 mt-2 flex flex-wrap gap-4 text-sm">
                         <span>&#128231; PRATEEKGOEL1503@GMAIL.COM</span>
                         <span>&#128241; +91 8860023839</span>
+                        <span>&#128279; linkedin.com/in/prateek-goel-557ab052</span>
                         <span>&#128205; Gurgaon, Haryana</span>
                     </p>
                 </div>
@@ -158,6 +157,195 @@
                         </div>
                     </div>
                 </section>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PRINT ONLY RESUME LAYOUT (Traditional Format for PDF Download) -->
+    <div class="hidden print:block max-w-4xl mx-auto bg-white text-slate-900 font-sans text-[11pt] leading-normal">
+        
+        <!-- Header -->
+        <div class="border-b-2 border-indigo-600 pb-4 mb-4 text-center">
+            <h1 class="text-3xl font-bold text-slate-900 uppercase tracking-wide">Prateek Goel</h1>
+            <h2 class="text-lg font-semibold text-indigo-700 mt-1">Salesforce Certified Application Architect</h2>
+            <div class="text-sm text-slate-600 mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                <span>PRATEEKGOEL1503@GMAIL.COM</span>
+                <span>|</span>
+                <span>+91 8860023839</span>
+                <span>|</span>
+                <span>linkedin.com/in/prateek-goel-557ab052</span>
+                <span>|</span>
+                <span>Gurgaon, Haryana</span>
+            </div>
+        </div>
+
+        <!-- About -->
+        <div class="mb-5">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-300 mb-2 pb-1 uppercase tracking-wider">About</h3>
+            <p class="text-justify">
+                Dynamic Salesforce professional with 15 years of experience across Energy Sector, E-commerce, B2B Medical Insurance, Liner & Logistics, and Telecom industries. Proven expertise in Salesforce CPQ, Sales Cloud, Service Cloud, Experience Cloud, and Force.com platform. Actively pivoting towards Generative AI development methodologies, leveraging tools like Cursor, Prompt Engineering, and Model Context Protocols (MCPs).
+            </p>
+            <ul class="list-disc pl-5 mt-2 space-y-1">
+                <li><strong>Project Success:</strong> Led multiple successful projects leveraging Salesforce solutions, driving operational efficiency and revenue growth.</li>
+                <li><strong>Certifications:</strong> Hold 14 Salesforce certifications, demonstrating comprehensive knowledge of the Salesforce ecosystem.</li>
+                <li><strong>Development Skills:</strong> Proficient in Apex, Visualforce, Lightning Web Components (LWC), and various type of integrations including REST, SOAP and Streaming API etc. enabling seamless business processes.</li>
+                <li><strong>Industry Knowledge:</strong> In-depth understanding of industry challenges, delivering tailored Salesforce solutions to meet specific business needs.</li>
+            </ul>
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-5 break-inside-avoid">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-300 mb-2 pb-1 uppercase tracking-wider">Skills</h3>
+            <ul class="list-disc pl-5 columns-2 gap-8 space-y-1 text-sm">
+                <li><strong>Gen AI:</strong> AI-Assisted Dev (Cursor), Prompt Engineering, MCPs</li>
+                <li>Salesforce and Force.com Platform</li>
+                <li>Sales, Service and Experience Cloud</li>
+                <li>Agile Methodologies and Release Management</li>
+                <li>LWC, JavaScript, Apex, Triggers, Visualforce</li>
+                <li>Object Model Creation, Validation rules</li>
+                <li>Security Model, Roles, Profiles, User Mgmt</li>
+                <li>Salesforce Automation (flows, workflows)</li>
+                <li>Data Migration and Data Integration</li>
+                <li>REST API, SOAP API, Streaming API</li>
+                <li>Integration Framework and Patterns</li>
+                <li>Salesforce DX and Version Control (GIT)</li>
+                <li>Designing salesforce technical solutions</li>
+                <li>Team management as tech lead</li>
+            </ul>
+        </div>
+
+        <!-- Employment & Projects -->
+        <div class="mb-5">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-300 mb-3 pb-1 uppercase tracking-wider">Employment & Projects</h3>
+            
+            <!-- EPAM -->
+            <div class="mb-4">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>LEAD SOFTWARE ENGINEER | EPAM</span>
+                    <span>Sep 2021 - Present</span>
+                </div>
+                <p class="mt-1 text-sm">Working as a software lead in EPAM. Working on Community Cloud project for a major telecom company in UK. Working as a Dev Lead and Solution Architect in the project.</p>
+                
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                    <div class="mb-2 break-inside-avoid">
+                        <div class="font-bold text-indigo-700">Project: Major Telecom Company in UK (CPQ - agile)</div>
+                        <div class="italic text-sm">Role: Tech Lead</div>
+                        <p class="text-sm mt-1 text-justify">Responsibilities: I led a team of 8 professionals in developing a Salesforce CPQ solution for a prominent telecom company. In this role, I collaborated closely with stakeholders and enterprise architects, ensuring that our project aligned with business objectives. My responsibilities included overseeing the implementation process, utilizing both technical expertise and strategic planning to achieve project success.</p>
+                    </div>
+                    <div class="break-inside-avoid">
+                        <div class="font-bold text-indigo-700">Project: US based Consumer Credit Reporting Agency</div>
+                        <div class="italic text-sm">Role: Lead</div>
+                        <p class="text-sm mt-1 text-justify">Responsibilities: This is a service cloud implementation, and we are building a system for the service agents to manage customer’s request and issues. My role here is of Technical Lead where I am responsible to make sure that developers can deliver their work on time, and they are following the best practices. I am to provide framework and setup the best practices for the team. Apart from it in my day-to-day work, I am connecting with business analysts, Product Owner, and business teams for discussions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nagarro -->
+            <div class="mb-4 break-inside-avoid">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>LEAD TECHNOLOGY | NAGARRO</span>
+                    <span>Aug 2018 - Sep 2021</span>
+                </div>
+                <p class="mt-1 text-sm">Managed the whole project. Handled the team of 5 developers along with 2 QAs. Worked closely with the client in creating and arranging the requirements for the project.</p>
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                    <div class="font-bold text-indigo-700">Project: Crowley Liner and Logistics Sales Cloud (Sales Cloud – agile/ad hoc)</div>
+                    <div class="italic text-sm">Role: Staff Engineer</div>
+                    <p class="text-sm mt-1 text-justify">Responsibilities: We built sales cloud for the liner logistics company. I was managing the whole project. In this project I was taking care of a team of 6 resources. I created trigger framework, setup the code best practices, code review practices. Along with that, I did development as well. We used to take calls with client every day.</p>
+                </div>
+            </div>
+
+            <!-- Accenture -->
+            <div class="mb-4 break-inside-avoid">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>TEAM LEAD | ACCENTURE</span>
+                    <span>Jul 2016 - Aug 2018</span>
+                </div>
+                <p class="mt-1 text-sm">Handle the team of senior developers and developers. Take every day stand-up calls and join the scrum meetings. Assign the requirements to the developers and do the development myself.</p>
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                    <div class="font-bold text-indigo-700">Project: Aetna CPQ (Custom CPQ – Force.com platform - agile)</div>
+                    <div class="italic text-sm">Role: Team Lead</div>
+                    <p class="text-sm mt-1 text-justify">Responsibilities: We built custom CPQ based on force.com platform. As a lead developer, my responsibilities were managing the team of developer and QA. I was doing the hands-on code as well. I was mentoring the developers. I implemented the many large functionalities. Additionally, I was going in different client meetings like daily standup, sprint retro, Sprint planning and specific requirement calls with BA or business.</p>
+                </div>
+            </div>
+
+            <!-- Snapdeal -->
+            <div class="mb-4 break-inside-avoid">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>SENIOR SALESFORCE DEVELOPER | SNAPDEAL.COM</span>
+                    <span>May 2015 - Jul 2016</span>
+                </div>
+                <p class="mt-1 text-sm">Work on the website's new feature implementation on salesforce. Get into the meetings with product owner and bas to gather requirements.</p>
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                    <div class="font-bold text-indigo-700">Project: Snapdeal.com Customer Experience (Service Cloud – waterfall/ad hoc)</div>
+                    <div class="italic text-sm">Role: Senior Salesforce Developer</div>
+                    <p class="text-sm mt-1 text-justify">Responsibilities: We built Snapdeal’s customer care solution in salesforce service cloud. We were managing more than 1.5 lac cases each day. As senior developer, my responsibility was to implement full feature end to end. I was using apex, visualforce. I was doing integrations. I was doing data migration and code migration as well. Additional to that, our responsibility was to connect with other teams and discuss requirements with product team and stakeholders.</p>
+                </div>
+            </div>
+
+            <!-- Capgemini -->
+            <div class="mb-4 break-inside-avoid">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>CONSULTANT | CAPGEMINI</span>
+                    <span>Apr 2014 - May 2015</span>
+                </div>
+                <p class="mt-1 text-sm">Worked as a salesforce consultant. Took the requirements and interpret them technically. Worked in three projects.</p>
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200 space-y-3">
+                    <div>
+                        <div class="font-bold text-indigo-700">Project: FALCK RSA (Service Cloud - agile)</div>
+                        <div class="italic text-sm">Role: Salesforce Developer</div>
+                        <p class="text-sm mt-1 text-justify">Responsibilities: This project was for one of the roadside assistance company based in Sweden. In this project I was working as developer. I build some features like search functionality, custom coding etc. in this project using visualforce page and apex.</p>
+                    </div>
+                    <div>
+                        <div class="font-bold text-indigo-700">Project: Johnson & Johnson HP&R (Force.com Platform - agile)</div>
+                        <div class="italic text-sm">Role: Salesforce Developer</div>
+                        <p class="text-sm mt-1 text-justify">Responsibilities: It was a small implementation built on force.com platform. In this project I worked as developer doing apex coding, created visualforce pages, created complex rejoined reports, and worked on data migration.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Mahindra -->
+            <div class="mb-4 break-inside-avoid">
+                <div class="flex justify-between font-bold text-slate-800 text-base">
+                    <span>SALESFORCE DEVELOPER | TECH MAHINDRA</span>
+                    <span>Apr 2011 - Mar 2014</span>
+                </div>
+                <p class="mt-1 text-sm">Worked as a salesforce developer. As a main responsibility, I was supposed to finish the tasks on time with minimum help from other people. I also, briefly handled a module of 2 people.</p>
+                <div class="mt-2 pl-4 border-l-2 border-indigo-200">
+                    <div class="font-bold text-indigo-700">Project: GE Power and Water (Sales Cloud – Water fall model)</div>
+                    <div class="italic text-sm">Role: Salesforce Developer</div>
+                    <p class="text-sm mt-1 text-justify">Responsibilities: Worked as a developer. Working on writing apex code, working on roles, profile, and salesforce security settings, do the data migration and deploy the code to production. Worked in different teams. Since it was my first project, so responsibilities grew gradually.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications -->
+        <div class="mb-5 break-inside-avoid">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-300 mb-2 pb-1 uppercase tracking-wider">Certificates</h3>
+            <ul class="list-disc pl-5 columns-2 gap-8 text-sm space-y-1">
+                <li>Salesforce Certified Application Architect</li>
+                <li>Salesforce Certified Data Architect</li>
+                <li>Salesforce Certified Integration Architect</li>
+                <li>Salesforce Certified Sharing and Visibility Architect</li>
+                <li>Salesforce Certified Development Lifestyle and Deployment Architect</li>
+                <li>Salesforce Certified AI Specialist</li>
+                <li>Salesforce Certified AI Associate</li>
+                <li>Salesforce Certified Data Cloud Consultant</li>
+                <li>Salesforce Certified Platform Developer 1</li>
+                <li>Salesforce Certified Platform Developer 2</li>
+                <li>Salesforce Certified Administrator</li>
+                <li>Salesforce Certified Platform App Builder</li>
+                <li>Salesforce Certified JavaScript Developer 1</li>
+                <li>Salesforce Certified Associate</li>
+            </ul>
+        </div>
+
+        <!-- Education -->
+        <div class="mb-5 break-inside-avoid">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-300 mb-2 pb-1 uppercase tracking-wider">Education</h3>
+            <div class="flex justify-between font-bold text-slate-800">
+                <span>Bachelor of Technology in CSE - UPTU, Lucknow</span>
+                <span>Aug 2006 - Jun 2010</span>
             </div>
         </div>
 

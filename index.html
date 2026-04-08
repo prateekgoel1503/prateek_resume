@@ -27,6 +27,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
+            overflow-x: hidden; /* Prevents horizontal scrollbar during generation */
         }
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -47,7 +48,7 @@
 <body class="p-4 md:p-8 relative">
 
     <!-- INTERACTIVE DASHBOARD VIEW -->
-    <div id="interactive-view" class="max-w-7xl mx-auto space-y-6 print:hidden">
+    <div id="interactive-view" class="max-w-7xl mx-auto space-y-6 print:hidden transition-opacity duration-300">
         
         <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -350,8 +351,9 @@
 
     </div>
 
-    <!-- PDF Loading Overlay (Hidden by default) -->
-    <div id="pdf-loading-overlay" class="hidden fixed inset-0 z-[9999] bg-white flex-col items-center justify-center">
+    <!-- PDF Loading Overlay (Will completely cover the screen during generation) -->
+    <!-- Added data-html2canvas-ignore to ensure the overlay itself isn't printed -->
+    <div id="pdf-loading-overlay" data-html2canvas-ignore="true" class="hidden fixed inset-0 z-[99999] bg-white flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mb-4"></div>
         <h2 class="text-2xl font-bold text-slate-800">Generating PDF...</h2>
         <p class="text-slate-500 mt-2">Preparing your perfectly formatted resume.</p>
@@ -628,74 +630,75 @@
             initCharts();
         });
 
+        // BULLETPROOF PDF GENERATION FOR MOBILE
         function downloadPDF(btn) {
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>⏳</span> Generating...';
-            btn.disabled = true;
-
             const interactiveView = document.getElementById('interactive-view');
             const classicResume = document.getElementById('classic-resume');
             const loadingOverlay = document.getElementById('pdf-loading-overlay');
 
-            // 1. Show the solid white loading overlay to hide the "flicker"
+            // 1. Show Loading Overlay instantly
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
 
-            // 2. completely hide the dashboard 
-            interactiveView.style.display = 'none';
-            
-            // 3. physically show the classic resume in the actual DOM flow
+            // 2. Hide Dashboard SECURELY (Shifts it off-screen without breaking Chart.js layout)
+            interactiveView.style.position = 'absolute';
+            interactiveView.style.left = '-9999px';
+            interactiveView.style.top = '0';
+
+            // 3. Prep Classic Resume (Forces a rigid 800px width so mobile screens don't squash it)
             classicResume.classList.remove('hidden', 'print:block');
             classicResume.style.display = 'block';
-            
-            // Force precise desktop formatting for the PDF engine
-            classicResume.style.width = '800px';
+            classicResume.style.setProperty('max-width', 'none', 'important');
+            classicResume.style.setProperty('width', '800px', 'important');
             classicResume.style.margin = '0 auto';
             classicResume.style.padding = '20px';
+            
+            // 4. Force scroll to top (Fixes the mobile html2canvas blank page offset bug)
+            window.scrollTo(0, 0);
 
             const opt = {
-                margin:       0.2,
+                margin:       0.3,
                 filename:     'Prateek_Goel_Resume.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
                     windowWidth: 800,
+                    scrollY: 0,
                     useCORS: true
                 },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            // 4. Wait a fraction of a second to ensure the browser has fully rendered the new DOM elements
+            // 5. Short delay allows browser to repaint DOM before taking snapshot
             setTimeout(() => {
                 html2pdf().set(opt).from(classicResume).save().then(() => {
-                    
-                    // 5. Clean up and restore the original dashboard view
-                    classicResume.style.display = '';
-                    classicResume.classList.add('hidden', 'print:block');
-                    classicResume.style.width = '';
-                    classicResume.style.padding = '';
-                    
-                    interactiveView.style.display = '';
-                    
-                    loadingOverlay.classList.remove('flex');
-                    loadingOverlay.classList.add('hidden');
-                    
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    
+                    restoreView();
                 }).catch(err => {
-                    // Fail gracefully and restore view if it breaks
-                    console.error("PDF Generation Error:", err);
-                    classicResume.style.display = '';
-                    classicResume.classList.add('hidden', 'print:block');
-                    interactiveView.style.display = '';
-                    loadingOverlay.classList.remove('flex');
-                    loadingOverlay.classList.add('hidden');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    alert("There was an error generating the PDF. Please try again.");
+                    console.error("PDF Error:", err);
+                    restoreView();
+                    alert("Could not generate PDF on this device. Please try on Desktop.");
                 });
-            }, 300);
+            }, 500);
+
+            // Cleanup Helper
+            function restoreView() {
+                // Re-hide classic resume
+                classicResume.style.removeProperty('max-width');
+                classicResume.style.removeProperty('width');
+                classicResume.style.display = '';
+                classicResume.style.margin = '';
+                classicResume.style.padding = '';
+                classicResume.classList.add('hidden', 'print:block');
+
+                // Bring interactive dashboard back on screen
+                interactiveView.style.position = '';
+                interactiveView.style.left = '';
+                interactiveView.style.top = '';
+
+                // Remove loading overlay
+                loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.remove('flex');
+            }
         }
     </script>
 </body>

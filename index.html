@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prateek Goel - Interactive Professional Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chosen Palette: Warm Professional Slate & Indigo. Background: slate-50. Cards: white. Text: slate-800. Accents: indigo-600 (tech/leadership), teal-500 (AI highlights). -->
+    <!-- Application Structure Plan: The SPA uses a dashboard layout to transform a linear resume into an explorable profile. It features a persistent header for contact info, a visual analytics section for quick skills/certification assessment, and an interactive experience viewer that lets users click through roles to reveal specific projects. This non-linear structure allows recruiters to instantly find the data they care about most (e.g., drilling into AI projects vs. core Salesforce architecture). -->
+    <!-- Visualization & Content Choices: 
+         1. Skills Matrix -> Radar Chart (Chart.js) -> Goal: Compare proficiency across domains -> Interaction: Hover for values -> Justification: Shows the balanced "T-shaped" skillset visually. NO SVG.
+         2. Certifications -> Doughnut Chart (Chart.js) -> Goal: Categorize 14 certs -> Interaction: Hover to see exact names -> Justification: Breaks down a dense list into digestible themes (Architecture vs AI vs Core). NO SVG.
+         3. Experience & Projects -> Interactive Split-Pane (HTML/JS) -> Goal: Organize & Inform -> Interaction: Click role to load project details -> Justification: Prevents text wall, encourages active exploration. NO SVG. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        @media print {
+            body { background-color: #ffffff; }
+            .no-print { display: none !important; }
+            /* Force background colors and charts to print */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            /* Expand scrollable areas for printing */
+            #roleList, #projectDetails { max-height: none !important; overflow: visible !important; height: auto !important; }
+            .shadow-sm { box-shadow: none !important; border-color: #e2e8f0 !important; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Prateek Goel</h1>
+                    <h2 class="text-xl md:text-2xl text-indigo-600 font-medium mt-1">Salesforce Certified Application Architect & Aspiring AI Product Owner</h2>
+                    <p class="text-slate-500 mt-2 flex flex-wrap gap-4">
+                        <span>&#128231; PRATEEKGOEL1503@GMAIL.COM</span>
+                        <span>&#128241; +91 8860023839</span>
+                        <span>&#128205; Gurgaon, Haryana</span>
+                    </p>
+                </div>
+                <div class="flex flex-col md:items-end gap-3 w-full md:w-auto">
+                    <button onclick="window.print()" class="no-print w-full md:w-auto flex justify-center items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm font-medium">
+                        <span>&#128424;</span> Save as PDF
+                    </button>
+                    <div class="flex justify-between md:justify-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100 w-full md:w-auto">
+                        <div class="text-center px-2 md:px-4 border-r border-slate-200">
+                            <div class="text-xl md:text-2xl font-bold text-slate-800">15</div>
+                            <div class="text-[10px] md:text-xs text-slate-500 uppercase tracking-wider">Years Exp</div>
+                        </div>
+                        <div class="text-center px-2 md:px-4 border-r border-slate-200">
+                            <div class="text-xl md:text-2xl font-bold text-slate-800">14</div>
+                            <div class="text-[10px] md:text-xs text-slate-500 uppercase tracking-wider">Certifications</div>
+                        </div>
+                        <div class="text-center px-2 md:px-4">
+                            <div class="text-xl md:text-2xl font-bold text-teal-600">AI</div>
+                            <div class="text-[10px] md:text-xs text-slate-500 uppercase tracking-wider">Focus</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-slate-100">
+                <p class="text-slate-700 leading-relaxed max-w-4xl">
+                    Dynamic Salesforce Architect with 15 years of experience across Energy, E-commerce, Medical Insurance, Logistics, and Telecom. Proven expertise in Salesforce CPQ, Sales/Service Cloud, and Force.com platform. Actively pivoting towards Generative AI development methodologies, leveraging tools like Cursor, Prompt Engineering, and Model Context Protocols (MCPs) to drive operational efficiency and innovative solutions.
+                </p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 space-y-6">
+                
+                <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>&#128202;</span> Skills Assessment
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-6">
+                        This section visualizes core competencies, blending 15 years of deep Salesforce architecture experience with emerging Generative AI engineering capabilities.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-6 space-y-3">
+                        <div class="p-3 bg-teal-50 rounded-lg border border-teal-100">
+                            <h4 class="text-sm font-semibold text-teal-800">Generative AI & LLMs</h4>
+                            <p class="text-xs text-teal-700 mt-1">AI-Assisted Dev (Cursor), Prompt Engineering, MCPs.</p>
+                        </div>
+                        <div class="p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                            <h4 class="text-sm font-semibold text-indigo-800">Architecture & Integration</h4>
+                            <p class="text-xs text-indigo-700 mt-1">REST/SOAP API, Platform Events, LWC, Apex, Security Models.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>&#127891;</span> Certifications
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-6">
+                        An overview of 14 official Salesforce certifications, grouped by knowledge domain to highlight specializations in Architecture and Artificial Intelligence. Hover for details.
+                    </p>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="certsChart"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <div class="lg:col-span-2">
+                <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>&#128188;</span> Interactive Experience Explorer
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-6">
+                        Select a role from the timeline on the left to explore the specific projects, architectural responsibilities, and leadership outcomes achieved during that tenure.
+                    </p>
+
+                    <div class="flex flex-col md:flex-row gap-6 flex-grow min-h-[500px]">
+                        
+                        <div class="md:w-1/3 border-r border-slate-200 pr-4 overflow-y-auto scrollbar-hide" id="roleList">
+                        </div>
+
+                        <div class="md:w-2/3 pl-2" id="projectDetails">
+                            <div class="h-full flex flex-col justify-center items-center text-center text-slate-400 p-8 border-2 border-dashed border-slate-200 rounded-xl">
+                                <span class="text-4xl mb-3">&#128072;</span>
+                                <p>Select a role from the timeline to view detailed projects and responsibilities.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const experienceData = [
+            {
+                id: 'epam',
+                company: 'EPAM',
+                role: 'Lead Software Engineer',
+                period: 'Sep 2021 - Present',
+                projects: [
+                    {
+                        name: 'Major Telecom Company in UK (CPQ - agile)',
+                        role: 'Tech Lead / Dev Lead & Solution Architect',
+                        desc: 'Led a team of 8 professionals in developing a Salesforce CPQ solution. Collaborated closely with stakeholders and enterprise architects to align the project with business objectives. Oversaw the implementation process, utilizing both technical expertise and strategic planning.',
+                        highlights: ['Community Cloud', 'AI Tools (Cursor) Integration', 'Architecture Definition']
+                    },
+                    {
+                        name: 'US based Consumer Credit Reporting Agency',
+                        role: 'Technical Lead',
+                        desc: 'Built a Service Cloud system for service agents to manage customer requests and issues. Provided the framework and best practices while ensuring timely delivery. Connected daily with business analysts, PO, and business teams.',
+                        highlights: ['Service Cloud', 'Team Management', 'Best Practices Framework']
+                    }
+                ]
+            },
+            {
+                id: 'nagarro',
+                company: 'Nagarro',
+                role: 'Lead Technology',
+                period: 'Aug 2018 - Sep 2021',
+                projects: [
+                    {
+                        name: 'Crowley Liner and Logistics Sales Cloud',
+                        role: 'Staff Engineer',
+                        desc: 'Managed the entire project and built the Sales Cloud implementation for the liner logistics company. Led a team of 6 resources, created a trigger framework, established code/review best practices, and performed hands-on development.',
+                        highlights: ['Sales Cloud', 'Trigger Frameworks', 'Agile/Scrum Management']
+                    }
+                ]
+            },
+            {
+                id: 'accenture',
+                company: 'Accenture',
+                role: 'Team Lead',
+                period: 'Jul 2016 - Aug 2018',
+                projects: [
+                    {
+                        name: 'Aetna CPQ',
+                        role: 'Team Lead',
+                        desc: 'Built a custom CPQ based on the Force.com platform. Mentored developers and implemented multiple large functionalities. Participated in daily standups and specific requirement calls.',
+                        highlights: ['Custom CPQ', 'Force.com', 'Mentorship']
+                    }
+                ]
+            },
+            {
+                id: 'snapdeal',
+                company: 'Snapdeal.com',
+                role: 'Senior Salesforce Developer',
+                period: 'May 2015 - Jul 2016',
+                projects: [
+                    {
+                        name: 'Snapdeal.com Customer Experience',
+                        role: 'Senior Salesforce Developer',
+                        desc: 'Built Snapdeal’s customer care solution in Salesforce Service Cloud to manage over 1.5 lakh cases daily. Implemented full features end-to-end using Apex and Visualforce. Handled integrations, data migration, and code migration.',
+                        highlights: ['High Volume Data (1.5L cases/day)', 'Apex/Visualforce', 'Integration & Migration']
+                    }
+                ]
+            },
+            {
+                id: 'capgemini',
+                company: 'Capgemini',
+                role: 'Consultant',
+                period: 'Apr 2014 - May 2015',
+                projects: [
+                    {
+                        name: 'FALCK RSA',
+                        role: 'Salesforce Developer',
+                        desc: 'Service Cloud project for a roadside assistance company based in Sweden. Built search functionality and custom coding using Visualforce and Apex.',
+                        highlights: ['Service Cloud', 'Custom UI']
+                    },
+                    {
+                        name: 'Johnson & Johnson HP&R',
+                        role: 'Salesforce Developer',
+                        desc: 'Implementation built on Force.com platform. Performed Apex coding, Visualforce pages, complex joined reports, and data migration.',
+                        highlights: ['Complex Reports', 'Data Migration']
+                    }
+                ]
+            },
+            {
+                id: 'techm',
+                company: 'Tech Mahindra',
+                role: 'Salesforce Developer',
+                period: 'Apr 2011 - Mar 2014',
+                projects: [
+                    {
+                        name: 'GE Power and Water',
+                        role: 'Salesforce Developer',
+                        desc: 'Wrote Apex code, configured roles, profiles, and security settings, performed data migration, and deployed code to production.',
+                        highlights: ['Sales Cloud', 'Security Settings']
+                    }
+                ]
+            }
+        ];
+
+        let activeRoleId = 'epam'; 
+
+        function renderRoleList() {
+            const listContainer = document.getElementById('roleList');
+            listContainer.innerHTML = '';
+
+            experienceData.forEach((exp, index) => {
+                const isActive = exp.id === activeRoleId;
+                const item = document.createElement('div');
+                
+                let baseClasses = "p-4 mb-3 rounded-xl cursor-pointer transition-all duration-200 border-l-4 ";
+                if (isActive) {
+                    baseClasses += "bg-indigo-50 border-indigo-600 shadow-sm";
+                } else {
+                    baseClasses += "bg-white border-transparent hover:bg-slate-50 border border-slate-100";
+                }
+
+                item.className = baseClasses;
+                item.onclick = () => {
+                    activeRoleId = exp.id;
+                    renderRoleList();
+                    renderProjectDetails();
+                };
+
+                item.innerHTML = `
+                    <div class="text-xs font-bold ${isActive ? 'text-indigo-600' : 'text-slate-500'} mb-1 uppercase tracking-wider">${exp.period}</div>
+                    <div class="font-bold text-slate-800">${exp.company}</div>
+                    <div class="text-sm text-slate-600">${exp.role}</div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function renderProjectDetails() {
+            const detailsContainer = document.getElementById('projectDetails');
+            const data = experienceData.find(e => e.id === activeRoleId);
+
+            if (!data) return;
+
+            let projectsHtml = data.projects.map(proj => `
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-4">
+                    <h4 class="text-lg font-bold text-indigo-900">${proj.name}</h4>
+                    <div class="text-sm font-medium text-slate-500 mb-4 inline-block bg-slate-100 px-3 py-1 rounded-full mt-2">${proj.role}</div>
+                    <p class="text-slate-700 text-sm leading-relaxed mb-4">${proj.desc}</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${proj.highlights.map(h => `<span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded border border-indigo-100">${h}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            detailsContainer.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="mb-6 pb-4 border-b border-slate-100">
+                        <h2 class="text-2xl font-bold text-slate-800">${data.company}</h2>
+                        <h3 class="text-lg text-indigo-600">${data.role}</h3>
+                        <p class="text-sm text-slate-500">${data.period}</p>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Key Projects & Deliverables</h3>
+                        ${projectsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function initCharts() {
+            const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+            new Chart(ctxSkills, {
+                type: 'radar',
+                data: {
+                    labels: ['Salesforce Core', 'Architecture', 'Integrations', 'LWC/Apex Dev', 'Generative AI', 'Leadership'],
+                    datasets: [{
+                        label: 'Proficiency Level',
+                        data: [95, 95, 90, 90, 80, 85],
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        pointBackgroundColor: 'rgba(13, 148, 136, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.05)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            pointLabels: {
+                                font: { family: "'Segoe UI', sans-serif", size: 12 },
+                                color: '#475569'
+                            },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 13 },
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ' Mastery';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxCerts = document.getElementById('certsChart').getContext('2d');
+            new Chart(ctxCerts, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Architecture (5)', 'Generative AI (2)', 'Development (4)', 'Consulting/Core (3)'],
+                    datasets: [{
+                        data: [5, 2, 4, 3],
+                        backgroundColor: [
+                            '#4f46e5',
+                            '#0d9488',
+                            '#3b82f6',
+                            '#64748b'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: { family: "'Segoe UI', sans-serif", size: 11 },
+                                color: '#475569',
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label = label.split(' (')[0];
+                                    }
+                                    if (label === 'Architecture') return [' Application Arch', ' Data Arch', ' Integration Arch', ' Sharing/Visibility Arch', ' Dev Lifecycle Arch'];
+                                    if (label === 'Generative AI') return [' AI Specialist', ' AI Associate'];
+                                    if (label === 'Development') return [' Platform Dev 1', ' Platform Dev 2', ' Platform App Builder', ' JS Dev 1'];
+                                    if (label === 'Consulting/Core') return [' Data Cloud Consultant', ' Administrator', ' Associate'];
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRoleList();
+            renderProjectDetails();
+            initCharts();
+        });
+
+    </script>
+</body>
+</html>

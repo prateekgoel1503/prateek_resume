@@ -35,12 +35,13 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Added page-break-inside to ensure it applies during HTML2Canvas capture */
+        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
         
         @media print {
             @page { margin: 1.5cm; }
             body { background-color: #ffffff; padding: 0 !important; margin: 0 !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .break-inside-avoid { break-inside: avoid; }
         }
     </style>
 </head>
@@ -622,17 +623,12 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderRoleList();
-            renderProjectDetails();
-            initCharts();
-        });
-
         function downloadPDF(btn) {
             const loadingOverlay = document.getElementById('pdf-loading-overlay');
             const originalText = btn.innerHTML;
-            const scrollPos = window.scrollY;
+            const scrollPos = window.scrollY; // Remember where user was
             
+            // Scroll to top to ensure html2canvas starts from a clean 0,0 state
             window.scrollTo(0, 0);
             
             btn.innerHTML = '<span>⏳</span> Generating...';
@@ -646,16 +642,20 @@
                 printWrapper.innerHTML = classicResumeSource.innerHTML;
                 
                 printWrapper.className = "bg-white text-slate-900 font-sans text-[11pt] leading-normal";
-                printWrapper.style.position = 'relative';
-                printWrapper.style.width = '800px';
-                printWrapper.style.padding = '40px'; 
+                // FIX: Use absolute positioning OVER the dashboard, but UNDER the loading overlay.
+                // This prevents layout shifting (Desktop fix) and memory cull (Mobile fix).
+                printWrapper.style.position = 'absolute';
+                printWrapper.style.top = '0';
+                printWrapper.style.left = '0';
+                printWrapper.style.width = '800px'; // Strict desktop width for perfect PDF scaling
                 printWrapper.style.backgroundColor = '#ffffff';
-                printWrapper.style.margin = '0';
+                printWrapper.style.zIndex = '99990'; 
+                // REMOVED padding: 40px so the html2pdf margin takes over cleanly for all pages.
                 
-                document.body.prepend(printWrapper);
+                document.body.appendChild(printWrapper);
 
                 const opt = {
-                    margin:       0,
+                    margin:       0.5, // FIX: Adds 0.5 inch margin to ALL pages (fixes top margin on pages 2 & 3)
                     filename:     'Prateek_Goel_Resume.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { 
@@ -665,7 +665,8 @@
                         scrollX: 0,
                         useCORS: true
                     },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+                    pagebreak:    { mode: ['css', 'legacy'] } // Ensures break-inside-avoid works
                 };
 
                 html2pdf().set(opt).from(printWrapper).save().then(() => {
@@ -678,13 +679,13 @@
 
                 function cleanup() {
                     document.body.removeChild(printWrapper);
-                    window.scrollTo(0, scrollPos);
+                    window.scrollTo(0, scrollPos); // Put the user back where they were
                     loadingOverlay.classList.add('hidden');
                     loadingOverlay.classList.remove('flex');
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
-            }, 300);
+            }, 300); // UI breathing room
         }
     </script>
 </body>

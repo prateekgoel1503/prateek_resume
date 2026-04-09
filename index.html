@@ -27,6 +27,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
+            overflow-x: hidden; 
         }
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -628,46 +629,61 @@
             initCharts();
         });
 
+        // 100% BULLETPROOF PDF GENERATION 
         function downloadPDF(btn) {
             const loadingOverlay = document.getElementById('pdf-loading-overlay');
             const originalText = btn.innerHTML;
-            const scrollPos = window.scrollY;
             
+            // 1. Force scroll to top FIRST to reset mobile browser viewports
             window.scrollTo(0, 0);
             
+            // 2. Give instant feedback and show overlay
             btn.innerHTML = '<span>⏳</span> Generating...';
             btn.disabled = true;
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
 
+            // 3. Add slight delay so UI renders the loading screen before thread locks
             setTimeout(() => {
                 const classicResumeSource = document.getElementById('classic-resume');
+                
+                // 4. Create a temporary, completely isolated container
                 const printWrapper = document.createElement('div');
                 printWrapper.innerHTML = classicResumeSource.innerHTML;
                 
+                // Set classes to match the design exactly
                 printWrapper.className = "bg-white text-slate-900 font-sans text-[11pt] leading-normal";
-                printWrapper.style.position = 'relative';
-                printWrapper.style.width = '800px';
+                
+                // THE FIX: Place it right at the top left, but ABOVE the interactive view 
+                // and BELOW the loading overlay. Mobile browsers will perfectly render this 
+                // because it has a positive z-index and is physically painted on the page.
+                printWrapper.style.position = 'absolute';
+                printWrapper.style.top = '0';
+                printWrapper.style.left = '0';
+                printWrapper.style.width = '800px'; // Exact desktop width
                 printWrapper.style.padding = '40px'; 
                 printWrapper.style.backgroundColor = '#ffffff';
-                printWrapper.style.margin = '0';
+                printWrapper.style.zIndex = '99998'; // Right under the 99999 loading overlay!
                 
-                document.body.prepend(printWrapper);
+                document.body.appendChild(printWrapper);
 
                 const opt = {
-                    margin:       0,
+                    margin:       0, // Handled by the 40px padding in printWrapper
                     filename:     'Prateek_Goel_Resume.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { 
                         scale: 2, 
                         windowWidth: 800,
-                        scrollY: 0,
+                        x: 0,
+                        y: 0,
+                        scrollY: 0, // Ignores how far user scrolled down
                         scrollX: 0,
                         useCORS: true
                     },
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
 
+                // 5. Generate and save
                 html2pdf().set(opt).from(printWrapper).save().then(() => {
                     cleanup();
                 }).catch(err => {
@@ -676,15 +692,15 @@
                     cleanup();
                 });
 
+                // 6. Clean up safely without touching the main interactive dashboard
                 function cleanup() {
                     document.body.removeChild(printWrapper);
-                    window.scrollTo(0, scrollPos);
                     loadingOverlay.classList.add('hidden');
                     loadingOverlay.classList.remove('flex');
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
-            }, 300);
+            }, 300); // 300ms is enough to let the loading screen pop up
         }
     </script>
 </body>

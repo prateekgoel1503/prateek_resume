@@ -634,32 +634,36 @@
             const loadingOverlay = document.getElementById('pdf-loading-overlay');
             const originalText = btn.innerHTML;
             
-            // 1. Give instant feedback and show overlay
+            // 1. Force scroll to top FIRST to reset mobile browser viewports
+            window.scrollTo(0, 0);
+            
+            // 2. Give instant feedback and show overlay
             btn.innerHTML = '<span>⏳</span> Generating...';
             btn.disabled = true;
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
 
-            // 2. Add slight delay so UI renders the loading screen before thread locks
+            // 3. Add slight delay so UI renders the loading screen before thread locks
             setTimeout(() => {
                 const classicResumeSource = document.getElementById('classic-resume');
                 
-                // 3. Create a temporary, completely isolated container
+                // 4. Create a temporary, completely isolated container
                 const printWrapper = document.createElement('div');
                 printWrapper.innerHTML = classicResumeSource.innerHTML;
                 
                 // Set classes to match the design exactly
                 printWrapper.className = "bg-white text-slate-900 font-sans text-[11pt] leading-normal";
                 
-                // THE FIX: Absolutely position it at the top-left (0,0). 
-                // NEVER use margin: auto here, or mobile browsers will push the left half off-screen!
+                // THE FIX: Place it right at the top left, but ABOVE the interactive view 
+                // and BELOW the loading overlay. Mobile browsers will perfectly render this 
+                // because it has a positive z-index and is physically painted on the page.
                 printWrapper.style.position = 'absolute';
                 printWrapper.style.top = '0';
                 printWrapper.style.left = '0';
                 printWrapper.style.width = '800px'; // Exact desktop width
                 printWrapper.style.padding = '40px'; 
                 printWrapper.style.backgroundColor = '#ffffff';
-                printWrapper.style.zIndex = '-9999'; // Keep it hidden behind everything else
+                printWrapper.style.zIndex = '99998'; // Right under the 99999 loading overlay!
                 
                 document.body.appendChild(printWrapper);
 
@@ -679,7 +683,7 @@
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
 
-                // 4. Generate and save
+                // 5. Generate and save
                 html2pdf().set(opt).from(printWrapper).save().then(() => {
                     cleanup();
                 }).catch(err => {
@@ -688,7 +692,7 @@
                     cleanup();
                 });
 
-                // 5. Clean up safely without touching the main interactive dashboard
+                // 6. Clean up safely without touching the main interactive dashboard
                 function cleanup() {
                     document.body.removeChild(printWrapper);
                     loadingOverlay.classList.add('hidden');

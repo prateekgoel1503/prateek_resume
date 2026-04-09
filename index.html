@@ -27,7 +27,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
-            overflow-x: hidden; 
+            /* Removed overflow-x: hidden; - This was causing mobile browsers to clip the 800px PDF canvas! */
         }
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -36,12 +36,13 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Added page-break-inside to ensure it applies during HTML2Canvas capture */
+        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
         
         @media print {
             @page { margin: 1.5cm; }
             body { background-color: #ffffff; padding: 0 !important; margin: 0 !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .break-inside-avoid { break-inside: avoid; }
         }
     </style>
 </head>
@@ -623,84 +624,80 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderRoleList();
-            renderProjectDetails();
-            initCharts();
-        });
-
         // 100% BULLETPROOF PDF GENERATION 
         function downloadPDF(btn) {
             const loadingOverlay = document.getElementById('pdf-loading-overlay');
             const originalText = btn.innerHTML;
+            const scrollPos = window.scrollY;
             
-            // 1. Force scroll to top FIRST to reset mobile browser viewports
-            window.scrollTo(0, 0);
-            
-            // 2. Give instant feedback and show overlay
+            // 1. Instantly show overlay and lock button
             btn.innerHTML = '<span>⏳</span> Generating...';
             btn.disabled = true;
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
 
-            // 3. Add slight delay so UI renders the loading screen before thread locks
+            // 2. Scroll to top to avoid offset bugs in html2canvas
+            window.scrollTo(0, 0);
+
+            // 3. Allow UI to paint the loading screen
             setTimeout(() => {
                 const classicResumeSource = document.getElementById('classic-resume');
-                
-                // 4. Create a temporary, completely isolated container
                 const printWrapper = document.createElement('div');
+                
+                // Copy contents
                 printWrapper.innerHTML = classicResumeSource.innerHTML;
                 
-                // Set classes to match the design exactly
+                // Copy base classes but strictly enforce position OVER the dashboard
+                // This ensures it sits outside of normal document flow (fixing desktop side-by-side break)
                 printWrapper.className = "bg-white text-slate-900 font-sans text-[11pt] leading-normal";
-                
-                // THE FIX: Place it right at the top left, but ABOVE the interactive view 
-                // and BELOW the loading overlay. Mobile browsers will perfectly render this 
-                // because it has a positive z-index and is physically painted on the page.
                 printWrapper.style.position = 'absolute';
                 printWrapper.style.top = '0';
                 printWrapper.style.left = '0';
-                printWrapper.style.width = '800px'; // Exact desktop width
-                printWrapper.style.padding = '40px'; 
+                printWrapper.style.width = '800px'; 
                 printWrapper.style.backgroundColor = '#ffffff';
-                printWrapper.style.zIndex = '99998'; // Right under the 99999 loading overlay!
                 
+                // Set z-index extremely high (99998) to ensure it renders correctly on top of the dashboard
+                // BUT keep it under the loading overlay (which is 99999) so the user does not see it jump.
+                printWrapper.style.zIndex = '99998'; 
+
                 document.body.appendChild(printWrapper);
 
-                const opt = {
-                    margin:       0, // Handled by the 40px padding in printWrapper
-                    filename:     'Prateek_Goel_Resume.pdf',
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { 
-                        scale: 2, 
-                        windowWidth: 800,
-                        x: 0,
-                        y: 0,
-                        scrollY: 0, // Ignores how far user scrolled down
-                        scrollX: 0,
-                        useCORS: true
-                    },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
+                // 4. Wait again so the mobile browser physically paints the new DOM element
+                setTimeout(() => {
+                    const opt = {
+                        margin:       0.5, // Native 0.5 inch margin on all sides, fixing pages 2 & 3
+                        filename:     'Prateek_Goel_Resume.pdf',
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { 
+                            scale: 2, 
+                            width: 800, // Forces internal canvas width
+                            windowWidth: 800, // Tricks html2canvas into rendering desktop breakpoint
+                            scrollY: 0,
+                            scrollX: 0,
+                            useCORS: true
+                        },
+                        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+                        pagebreak:    { mode: ['css', 'legacy'] }
+                    };
 
-                // 5. Generate and save
-                html2pdf().set(opt).from(printWrapper).save().then(() => {
-                    cleanup();
-                }).catch(err => {
-                    console.error("PDF Error:", err);
-                    alert("Could not generate PDF. Please try again.");
-                    cleanup();
-                });
+                    html2pdf().set(opt).from(printWrapper).save().then(() => {
+                        cleanup();
+                    }).catch(err => {
+                        console.error("PDF Error:", err);
+                        alert("Could not generate PDF. Please try again.");
+                        cleanup();
+                    });
+                }, 600); // 600ms wait forces mobile paint queue execution
 
-                // 6. Clean up safely without touching the main interactive dashboard
                 function cleanup() {
                     document.body.removeChild(printWrapper);
+                    window.scrollTo(0, scrollPos); // Restore user position smoothly
                     loadingOverlay.classList.add('hidden');
                     loadingOverlay.classList.remove('flex');
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
-            }, 300); // 300ms is enough to let the loading screen pop up
+            }, 50); 
         }
     </script>
 </body>

@@ -178,6 +178,12 @@
 /* ── Experience data ── */
 const experienceData = [
   { id:'epam', company:'EPAM', role:'Lead Software Engineer & Solution Architect', period:'Sep 2021 - Present', projects:[
+    { name:'Enterprise E-Signature & Digital Agreement Platform - Force.com', role:'Lead',
+      desc:'Currently leading development of the second generation of an enterprise e-signature and digital agreement platform (a DocuSign-class product) built natively on the Force.com platform. Driving the Gen2 architecture with a modern hybrid front-end - customer-facing UI components engineered in Angular and the core application experience delivered on Salesforce Lightning Web Components (LWC). Own technical direction, code quality, and hands-on delivery while leading the engineering team.',
+      highlights:['Force.com Product Dev','Angular + LWC','Technical Leadership'] },
+    { name:'US-based Telecom Giant - Sales Cloud (Technical Debt Remediation)', role:'Solution Architect / Tech Lead',
+      desc:'Led large-scale technical debt remediation and modernization of a nearly 20-year-old Salesforce Sales Cloud org for a major US telecom enterprise. Assessed and rationalized a heavily overloaded platform - consolidating 1,000+ legacy Workflow Rules and 200+ Process Builders into scalable modern automation, refactoring multiple conflicting triggers per object into a unified trigger-handler framework, and rationalizing an excessive volume of page layouts. Improved maintainability, performance, and governor-limit headroom while reducing long-term maintenance cost.',
+      highlights:['Sales Cloud','Legacy Modernization','Trigger Framework'] },
     { name:'Major Telecom Company in UK - CPQ', role:'Tech Lead / Solution Architect',
       desc:'Architected and delivered a fully-featured Salesforce CPQ solution for one of the UK\'s largest telecom enterprises, leading a high-performance team of 8 engineers. Partnered with C-level stakeholders and enterprise architects to translate complex business requirements into scalable technical solutions, maintaining rigorous alignment with strategic objectives throughout the delivery lifecycle.',
       highlights:['Salesforce CPQ','Community Cloud','Architecture'] },
@@ -394,8 +400,12 @@ function downloadPDF() {
       section('Employment & Projects');
       const jobs=[
         { title:'Lead Software Engineer & Solution Architect | EPAM', period:'Sep 2021 - Present',
-          summary:'Dev Lead and Solution Architect on a Community Cloud / CPQ project for a major UK telecom company.',
+          summary:'Lead and Solution Architect across Force.com product development, large-scale Sales Cloud modernization, and CPQ delivery for global enterprises.',
           projects:[
+            { name:'Enterprise E-Signature & Digital Agreement Platform - Force.com', role:'Role: Lead',
+              desc:'Currently leading development of the second generation of an enterprise e-signature and digital agreement platform (a DocuSign-class product) built natively on the Force.com platform. Driving the Gen2 architecture with a modern hybrid front-end - customer-facing UI components engineered in Angular and the core application experience delivered on Salesforce Lightning Web Components (LWC). Own technical direction, code quality, and hands-on delivery while leading the engineering team.' },
+            { name:'US-based Telecom Giant - Sales Cloud (Technical Debt Remediation)', role:'Role: Solution Architect / Tech Lead',
+              desc:'Led large-scale technical debt remediation and modernization of a nearly 20-year-old Salesforce Sales Cloud org for a major US telecom enterprise. Assessed and rationalized a heavily overloaded platform - consolidating 1,000+ legacy Workflow Rules and 200+ Process Builders into scalable modern automation, refactoring multiple conflicting triggers per object into a unified trigger-handler framework, and rationalizing an excessive volume of page layouts. Improved maintainability, performance, and governor-limit headroom while reducing long-term maintenance cost.' },
             { name:'Major Telecom Company in UK - CPQ (Agile)', role:'Role: Tech Lead / Dev Lead & Solution Architect',
               desc:'Architected and delivered a fully-featured Salesforce CPQ solution for one of the UK\'s largest telecom enterprises, leading a high-performance team of 8 engineers. Partnered with C-level stakeholders and enterprise architects to translate complex business requirements into scalable technical solutions, maintaining rigorous alignment with strategic objectives throughout the delivery lifecycle.' },
             { name:'US-based Consumer Credit Reporting Agency', role:'Role: Technical Lead',
